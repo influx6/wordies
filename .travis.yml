@@ -1,0 +1,11 @@
+language: go
+
+versions:
+  - go1.8
+  - go1.9
+
+before_script:
+after_script:
+script:
+
+

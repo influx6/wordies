@@ -1,0 +1,43 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "MlUD2f40H8YDmxG3x4Fta3l+iUk=",
+			"path": "github.com/corpix/uarand",
+			"revision": "2b8494104d86337cdd41d0a49cbed8e4583c0ab4",
+			"revisionTime": "2017-09-03T19:08:22Z"
+		},
+		{
+			"checksumSHA1": "06I0wBTXKCu2Br46zNqsv+LXRgY=",
+			"path": "github.com/gorilla/mux",
+			"revision": "7625a85c14e615274a4ee4bc8654f72310a563e4",
+			"revisionTime": "2017-10-20T03:47:00Z"
+		},
+		{
+			"checksumSHA1": "qt71KoGfs0dZ/GDaXFXmvFs54PQ=",
+			"path": "github.com/icrowley/fake",
+			"revision": "e64cc2cf92049a299f359734c6ea76073f2a8b2c",
+			"revisionTime": "2017-07-23T15:10:11Z"
+		},
+		{
+			"checksumSHA1": "yMtRtR7uotNm/tDmdthIn9RMOQ4=",
+			"path": "github.com/influx6/faux/bag",
+			"revision": "6588dec3d92c5c37be9274572b00939259eddeff",
+			"revisionTime": "2018-01-13T20:34:54Z"
+		},
+		{
+			"checksumSHA1": "QtUs33miKSK95tDeQR3ao0qMyDc=",
+			"path": "github.com/influx6/faux/flags",
+			"revision": "6588dec3d92c5c37be9274572b00939259eddeff",
+			"revisionTime": "2018-01-13T20:34:54Z"
+		},
+		{
+			"checksumSHA1": "/PE0RGwoNeVkhlVKWxnIt0TgAA4=",
+			"path": "github.com/influx6/faux/tests",
+			"revision": "6588dec3d92c5c37be9274572b00939259eddeff",
+			"revisionTime": "2018-01-13T20:34:54Z"
+		}
+	],
+	"rootPath": "github.com/influx6/wordies"
+}
