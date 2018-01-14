@@ -1,7 +1,8 @@
 Wordies
 ---------
 [![Go Report Card](https://goreportcard.com/badge/github.com/influx6/wordies)](https://goreportcard.com/report/github.com/influx6/wordies)
-[![Travis Build Status](https://travis-ci.org/travis-ci/github.com/influx6/wordies)](https://goreportcard.com/report/github.com/influx6/wordies)
+[![Travis Build Status](https://travis-ci.org/influx6/wordies.svg?branch=master)](https://travis-ci.org/influx6/wordies#)
+[![CircleCI](https://circleci.com/gh/influx6/wordies.svg?style=svg)](https://circleci.com/gh/influx6/wordies)
 
 Wordies showcases a simple CLI service that exposes a tcp server and a http server, where the tcp server exposed on port `5555` by default, receives strings of sentences as text ending in newline or `\r\n`, which it counts all letters and word frequencies.
 
