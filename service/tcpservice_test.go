@@ -28,7 +28,7 @@ func TestTCPService(t *testing.T) {
 
 	jobs := make(chan chan []string, 1)
 
-	addr := "localhost:4559"
+	addr := "localhost:5050"
 	var waiter sync.WaitGroup
 	waiter.Add(1)
 
