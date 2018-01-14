@@ -137,14 +137,20 @@ func send(ctx flags.Context) error {
 		return err
 	}
 
+	defer conn.Close()
+
 	sentences := strings.Join(ctx.Args(), " ") + "\r\n"
 	fmt.Printf("Sending: %+q\n", sentences)
 
 	writer := bufio.NewWriterSize(conn, len(sentences))
 	writer.WriteString(sentences)
+
+	conn.SetWriteDeadline(time.Now().Add(time.Second * 5))
 	if err := writer.Flush(); err != nil {
+		conn.SetWriteDeadline(time.Time{})
 		return err
 	}
+	conn.SetWriteDeadline(time.Time{})
 
 	fmt.Println("Sent!")
 	return nil
