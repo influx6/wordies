@@ -5,6 +5,7 @@ go:
   - 1.9
 
 install:
+  - go install
 before_script:
 after_script:
 script:
