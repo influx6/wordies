@@ -29,7 +29,7 @@ func main() {
 			Flags: []flags.Flag{
 				&flags.StringFlag{
 					Name:    "httpAddr",
-					Desc:    "sets the address for the tcp level service",
+					Desc:    "sets the address for the http service",
 					Default: "localhost:8080",
 				},
 				&flags.DurationFlag{
