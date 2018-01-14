@@ -12,6 +12,8 @@ import (
 	"github.com/icrowley/fake"
 )
 
+var addr = "localhost:64559"
+
 type goRecieveNotificaitons struct {
 	top5   *Top5WordLetterStat
 	waiter sync.WaitGroup
@@ -33,7 +35,6 @@ func BenchmarkTCPServiceWithConstantMessage(b *testing.B) {
 	pool := NewWorkerPool(300, 5*time.Second)
 	ctx, cancel := context.WithCancel(context.Background())
 
-	addr := "localhost:4559"
 	var waiter sync.WaitGroup
 
 	waiter.Add(1)
@@ -77,7 +78,6 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	addr := "localhost:4559"
 	var waiter sync.WaitGroup
 
 	waiter.Add(1)
@@ -120,7 +120,6 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 	var doneNotifier goRecieveNotificaitons
 	doneNotifier.top5 = top5
 
-	addr := "localhost:4559"
 	var waiter sync.WaitGroup
 
 	pool := NewWorkerPool(100, 5*time.Second)
