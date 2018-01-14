@@ -34,7 +34,7 @@ func TestLetterCount(t *testing.T) {
 }
 
 func TestWordCounter(t *testing.T) {
-	expected := map[int][]string{1: []string{"After", "appeared", "at", "before", "but", "cafe", "coffee", "got", "home", "kissed", "knew", "left", "married", "met", "some", "the", "went", "were", "which", "with"}, 2: []string{"Greg", "I", "Miss.", "we"}, 3: []string{"and", "me"}}
+	expected := map[int][]string{1: []string{"after", "appeared", "at", "before", "but", "cafe", "coffee", "got", "home", "kissed", "knew", "left", "married", "met", "some", "the", "went", "were", "which", "with"}, 2: []string{"greg", "i", "miss.", "we"}, 3: []string{"and", "me"}}
 
 	counter := NewWordCounter()
 	for _, word := range basicWords {

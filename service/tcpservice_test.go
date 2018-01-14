@@ -16,7 +16,7 @@ var (
 	top5Expected = Top5Stat{
 		Count:   26,
 		Letters: []string{"E", "A", "M", "T", "I"},
-		Words:   []string{"me", "and", "Miss.", "Greg", "I"},
+		Words:   []string{"me", "and", "miss.", "greg", "i"},
 	}
 )
 

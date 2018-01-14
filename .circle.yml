@@ -18,7 +18,10 @@ jobs:
     steps:
       - checkout
 
-      # specify any bash command here prefixed with `run: `
-      - run: go test -v ./abbrvs/...
-      - run: go test -v ./service/...
-      - run: go test -run=xXX -bench=.
+#      -run
+
+    tests:
+     override:
+      - go test -v ./abbrvs/...
+      - go test -v ./service/...
+      - go test -run=xXX -bench=.
