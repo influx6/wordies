@@ -50,7 +50,7 @@ func TestTCPService(t *testing.T) {
 	waiter.Add(1)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, addr, pool, letters, words, doneNotifier)
+		TCPService(ctx, false, addr, pool, letters, words, doneNotifier)
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)

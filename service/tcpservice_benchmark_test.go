@@ -39,7 +39,7 @@ func BenchmarkTCPServiceWithConstantMessage(b *testing.B) {
 	waiter.Add(1)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, addr, pool, letters, words, nil)
+		TCPService(ctx, false, addr, pool, letters, words, nil)
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
@@ -83,7 +83,7 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 	waiter.Add(1)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, addr, pool, letters, words, nil)
+		TCPService(ctx, false, addr, pool, letters, words, nil)
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
@@ -129,7 +129,7 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 	waiter.Add(1)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, addr, pool, letters, words, doneNotifier)
+		TCPService(ctx, false, addr, pool, letters, words, doneNotifier)
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)

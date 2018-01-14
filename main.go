@@ -173,5 +173,5 @@ func serve(ctx flags.Context) error {
 	}()
 
 	tcpAddr, _ := ctx.GetString("tcpAddr")
-	return service.TCPService(ctx, tcpAddr, pools, letters, words, top5)
+	return service.TCPService(ctx, true, tcpAddr, pools, letters, words, top5)
 }

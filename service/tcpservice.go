@@ -17,7 +17,7 @@ var (
 
 // TCPService initializes a simple tcp based connection which listens for requests form clients, which
 // then gets processed by both letters and word counters in provided worker pool.
-func TCPService(ctx context.Context, addr string, pool WorkerPool, letters *LetterCounter, words *WordCounter, nf StatMetric) error {
+func TCPService(ctx context.Context, verbose bool, addr string, pool WorkerPool, letters *LetterCounter, words *WordCounter, nf StatMetric) error {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -28,7 +28,9 @@ func TCPService(ctx context.Context, addr string, pool WorkerPool, letters *Lett
 		<-ctx.Done()
 	}()
 
-	log.Printf("TCP Service listening on %+q\n", addr)
+	if verbose {
+		log.Printf("TCP Service listening on %+q\n", addr)
+	}
 
 	var waiter sync.WaitGroup
 
@@ -45,7 +47,9 @@ func TCPService(ctx context.Context, addr string, pool WorkerPool, letters *Lett
 		go func(cn net.Conn) {
 			defer waiter.Done()
 			if err := handleClientConnection(cn, pool, letters, words, nf); err != nil {
-				log.Printf("client connection closed: %+s\n", cn.RemoteAddr())
+				if verbose {
+					log.Printf("client connection closed: %+s\n", cn.RemoteAddr())
+				}
 			}
 		}(newConn)
 	}
@@ -76,7 +80,9 @@ func handleClientConnection(conn net.Conn, pool WorkerPool, lt *LetterCounter, w
 		// also we need to keep this data uncorruptable, preferable to
 		// turn into string here than copy into another slice.
 		func(sentence string) {
-			fmt.Println("Recieved: ", sentence)
+			if verbose {
+				fmt.Println("Recieved: ", sentence)
+			}
 			pool.Add(func() {
 				for _, word := range lexSentence(data) {
 					lt.Compute(word)
