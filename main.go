@@ -188,7 +188,10 @@ func serve(ctx flags.Context) error {
 			select {
 			case <-ctx.Done():
 				return
-			case job := <-wordJobs:
+			case job, ok := <-wordJobs:
+				if !ok {
+					return
+				}
 				if err := pools.Add(func() {
 					for _, word := range <-job {
 						letterCounter.Compute(word)
