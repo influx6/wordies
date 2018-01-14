@@ -46,7 +46,7 @@ func TCPService(ctx context.Context, verbose bool, addr string, pool WorkerPool,
 		waiter.Add(1)
 		go func(cn net.Conn) {
 			defer waiter.Done()
-			if err := handleClientConnection(cn, pool, letters, words, nf); err != nil {
+			if err := handleClientConnection(cn, verbose, pool, letters, words, nf); err != nil {
 				if verbose {
 					log.Printf("client connection closed: %+s\n", cn.RemoteAddr())
 				}
@@ -60,7 +60,7 @@ func TCPService(ctx context.Context, verbose bool, addr string, pool WorkerPool,
 
 // handleClientConnection handles the internal logic necessary to listen to messages provided by connected clients.
 // We will read on a line by line basis, that is all text must have the \r\n ending attached.
-func handleClientConnection(conn net.Conn, pool WorkerPool, lt *LetterCounter, wd *WordCounter, nf StatMetric) error {
+func handleClientConnection(conn net.Conn, verbose bool, pool WorkerPool, lt *LetterCounter, wd *WordCounter, nf StatMetric) error {
 	reader := bufio.NewReaderSize(conn, maxDataSize)
 	defer reader.Reset(nil)
 
