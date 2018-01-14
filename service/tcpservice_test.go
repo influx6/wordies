@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"bufio"
@@ -9,48 +9,33 @@ import (
 	"time"
 
 	"github.com/influx6/faux/tests"
+	"github.com/influx6/wordies/service"
 )
 
 var (
 	ending       = []byte("\r\n")
-	top5Expected = Top5Stat{
+	top5Expected = service.Top5Stat{
 		Count:   26,
 		Letters: []string{"E", "A", "M", "T", "I"},
 		Words:   []string{"me", "and", "miss.", "greg", "i"},
 	}
 )
 
-type goHeadStat struct {
-	top5 *Top5WordLetterStat
-	done chan struct{}
-}
-
-func (gh goHeadStat) Update(fr FreshStat) {
-	gh.top5.Update(fr)
-	close(gh.done)
-}
-
 func TestTCPService(t *testing.T) {
-	letters := NewLetterCounter()
-	words := NewWordCounter()
-	top5 := new(Top5WordLetterStat)
+	letters := service.NewLetterCounter()
+	words := service.NewWordCounter()
+	top5 := new(service.Top5WordLetterStat)
 
-	var doneNotifier goHeadStat
-	doneNotifier.top5 = top5
-	doneNotifier.done = make(chan struct{}, 0)
-
-	pool := NewWorkerPool(300, 3*time.Second)
-	defer pool.Stop()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	jobs := make(chan chan []string, 1)
 
 	addr := "localhost:4559"
 	var waiter sync.WaitGroup
-
 	waiter.Add(1)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, false, addr, pool, letters, words, doneNotifier)
+		service.TCPService(ctx, false, addr, jobs)
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
@@ -68,10 +53,23 @@ func TestTCPService(t *testing.T) {
 	}
 	tests.Passed("Should have successfully written data to tcp service.")
 
-	<-doneNotifier.done
-
 	conn.Close()
 	cancel()
+
+	job := <-jobs
+	for _, word := range <-job {
+		letters.Compute(word)
+		words.Compute(word)
+	}
+
+	ltstat, lttotal := letters.Stat()
+	wdstat, wdtotal := words.Stat()
+	top5.Update(service.FreshStat{
+		Words:        wdstat,
+		Letters:      ltstat,
+		TotalWords:   wdtotal,
+		TotalLetters: lttotal,
+	})
 
 	stat := top5.Stat()
 	if stat.Count != top5Expected.Count {

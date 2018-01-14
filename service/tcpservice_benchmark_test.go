@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"bufio"
@@ -10,37 +10,38 @@ import (
 	"time"
 
 	"github.com/icrowley/fake"
+	"github.com/influx6/wordies/service"
 )
-
-var addr = "localhost:64559"
-
-type goRecieveNotificaitons struct {
-	top5   *Top5WordLetterStat
-	waiter sync.WaitGroup
-}
-
-func (gh goRecieveNotificaitons) Update(fr FreshStat) {
-	gh.waiter.Add(1)
-	defer gh.waiter.Done()
-	gh.top5.Update(fr)
-}
 
 func BenchmarkTCPServiceWithConstantMessage(b *testing.B) {
 	b.StopTimer()
 	b.ReportAllocs()
 
-	letters := NewLetterCounter()
-	words := NewWordCounter()
+	letters := service.NewLetterCounter()
+	words := service.NewWordCounter()
 
-	pool := NewWorkerPool(300, 5*time.Second)
+	var addr = "localhost:64559"
 	ctx, cancel := context.WithCancel(context.Background())
 
+	jobs := make(chan chan []string, 0)
 	var waiter sync.WaitGroup
 
 	waiter.Add(1)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, false, addr, pool, letters, words, nil)
+		service.TCPService(ctx, false, addr, jobs)
+	}()
+
+	// drain channel
+	waiter.Add(1)
+	go func() {
+		defer waiter.Done()
+		for job := range jobs {
+			for _, word := range <-job {
+				letters.Compute(word)
+				words.Compute(word)
+			}
+		}
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
@@ -62,8 +63,6 @@ func BenchmarkTCPServiceWithConstantMessage(b *testing.B) {
 
 	conn.Close()
 	cancel()
-
-	pool.Stop()
 	waiter.Wait()
 }
 
@@ -71,19 +70,32 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 	b.StopTimer()
 	b.ReportAllocs()
 
-	letters := NewLetterCounter()
-	words := NewWordCounter()
+	letters := service.NewLetterCounter()
+	words := service.NewWordCounter()
 
-	pool := NewWorkerPool(300, 5*time.Second)
-
+	var addr = "localhost:44559"
 	ctx, cancel := context.WithCancel(context.Background())
+
+	jobs := make(chan chan []string, 0)
 
 	var waiter sync.WaitGroup
 
 	waiter.Add(1)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, false, addr, pool, letters, words, nil)
+		service.TCPService(ctx, false, addr, jobs)
+	}()
+
+	// drain channel
+	waiter.Add(1)
+	go func() {
+		defer waiter.Done()
+		for job := range jobs {
+			for _, word := range <-job {
+				letters.Compute(word)
+				words.Compute(word)
+			}
+		}
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
@@ -104,8 +116,6 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 
 	conn.Close()
 	cancel()
-
-	pool.Stop()
 	waiter.Wait()
 }
 
@@ -113,22 +123,42 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 	b.StopTimer()
 	b.ReportAllocs()
 
-	letters := NewLetterCounter()
-	words := NewWordCounter()
-	top5 := new(Top5WordLetterStat)
-
-	var doneNotifier goRecieveNotificaitons
-	doneNotifier.top5 = top5
+	letters := service.NewLetterCounter()
+	words := service.NewWordCounter()
+	top5 := new(service.Top5WordLetterStat)
 
 	var waiter sync.WaitGroup
 
-	pool := NewWorkerPool(100, 5*time.Second)
+	var addr = "localhost:24559"
+
+	jobs := make(chan chan []string, 0)
 	ctx, cancel := context.WithCancel(context.Background())
 
 	waiter.Add(1)
 	go func() {
 		defer waiter.Done()
-		TCPService(ctx, false, addr, pool, letters, words, doneNotifier)
+		service.TCPService(ctx, false, addr, jobs)
+	}()
+
+	// drain channel
+	waiter.Add(1)
+	go func() {
+		defer waiter.Done()
+		for job := range jobs {
+			for _, word := range <-job {
+				letters.Compute(word)
+				words.Compute(word)
+			}
+
+			ltstat, lttotal := letters.Stat()
+			wdstat, wdtotal := words.Stat()
+			top5.Update(service.FreshStat{
+				Words:        wdstat,
+				Letters:      ltstat,
+				TotalWords:   wdtotal,
+				TotalLetters: lttotal,
+			})
+		}
 	}()
 
 	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
@@ -149,7 +179,5 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 	b.StopTimer()
 	conn.Close()
 	cancel()
-	pool.Stop()
-	doneNotifier.waiter.Wait()
 	waiter.Wait()
 }

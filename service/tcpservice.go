@@ -3,12 +3,15 @@ package service
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"bufio"
 	"net"
 	"net/textproto"
 	"sync"
+
+	"github.com/influx6/wordies/internal"
 )
 
 var (
@@ -17,7 +20,9 @@ var (
 
 // TCPService initializes a simple tcp based connection which listens for requests form clients, which
 // then gets processed by both letters and word counters in provided worker pool.
-func TCPService(ctx context.Context, verbose bool, addr string, pool WorkerPool, letters *LetterCounter, words *WordCounter, nf StatMetric) error {
+func TCPService(ctx context.Context, verbose bool, addr string, jobs chan chan []string) error {
+	defer close(jobs)
+
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -46,7 +51,7 @@ func TCPService(ctx context.Context, verbose bool, addr string, pool WorkerPool,
 		waiter.Add(1)
 		go func(cn net.Conn) {
 			defer waiter.Done()
-			if err := handleClientConnection(cn, verbose, pool, letters, words, nf); err != nil {
+			if err := handleClientConnection(cn, verbose, jobs); err != nil {
 				if verbose {
 					log.Printf("client connection closed: %+s\n", cn.RemoteAddr())
 				}
@@ -60,7 +65,7 @@ func TCPService(ctx context.Context, verbose bool, addr string, pool WorkerPool,
 
 // handleClientConnection handles the internal logic necessary to listen to messages provided by connected clients.
 // We will read on a line by line basis, that is all text must have the \r\n ending attached.
-func handleClientConnection(conn net.Conn, verbose bool, pool WorkerPool, lt *LetterCounter, wd *WordCounter, nf StatMetric) error {
+func handleClientConnection(conn net.Conn, verbose bool, jobs chan chan []string) error {
 	reader := bufio.NewReaderSize(conn, maxDataSize)
 	defer reader.Reset(nil)
 
@@ -69,39 +74,21 @@ func handleClientConnection(conn net.Conn, verbose bool, pool WorkerPool, lt *Le
 	for {
 		data, err := textReader.ReadLine()
 		if err != nil {
-			//if err == io.EOF {
-			//fmt.Printf("Read Err on %+q: %+q\n", conn.RemoteAddr(), err)
-			//}
+			if err == io.EOF && verbose {
+				fmt.Printf("Read Err on %+q: %+q\n", conn.RemoteAddr(), err)
+			}
 
 			return err
 		}
 
-		// transform to string, since we are expecting sentences
-		// also we need to keep this data uncorruptable, preferable to
-		// turn into string here than copy into another slice.
-		func(sentence string) {
-			if verbose {
-				fmt.Println("Recieved: ", sentence)
-			}
-			pool.Add(func() {
-				for _, word := range lexSentence(data) {
-					lt.Compute(word)
-					wd.Compute(word)
-				}
+		sentence := string(data)
+		if verbose {
+			fmt.Printf("Recieved: %+q\n", sentence)
+		}
 
-				// Send lastest stat updates if required.
-				if nf != nil {
-					letters, letterCount := lt.Stat()
-					words, wordCount := wd.Stat()
-					nf.Update(FreshStat{
-						Words:        words,
-						Letters:      letters,
-						TotalWords:   wordCount,
-						TotalLetters: letterCount,
-					})
-				}
-			})
-		}(string(data))
+		job := make(chan []string, 1)
+		job <- internal.LexSentence(sentence)
+		jobs <- job
 	}
 
 	return nil

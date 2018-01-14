@@ -16,6 +16,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/influx6/faux/flags"
+	"github.com/influx6/wordies/internal"
 	"github.com/influx6/wordies/service"
 )
 
@@ -67,6 +68,11 @@ func main() {
 					Name:    "workers",
 					Desc:    "sets the maximum workers for background language processing requests",
 					Default: 1000,
+				},
+				&flags.IntFlag{
+					Name:    "job.buffer",
+					Desc:    "sets the maximum buffer to queue processing jobs",
+					Default: 500,
 				},
 				&flags.DurationFlag{
 					Name:    "workers.timeout",
@@ -146,11 +152,14 @@ func send(ctx flags.Context) error {
 
 func serve(ctx flags.Context) error {
 	workers, _ := ctx.GetInt("workers")
+	jobbuffer, _ := ctx.GetInt("job.buffer")
 	timeout, _ := ctx.GetDuration("workers.timeout")
-	pools := service.NewWorkerPool(workers, timeout)
 
-	words := service.NewWordCounter()
-	letters := service.NewLetterCounter()
+	pools := internal.NewWorkerPool(workers, timeout)
+	defer pools.Stop()
+
+	wordCounter := service.NewWordCounter()
+	letterCounter := service.NewLetterCounter()
 	top5 := new(service.Top5WordLetterStat)
 
 	router := mux.NewRouter()
@@ -172,6 +181,35 @@ func serve(ctx flags.Context) error {
 		}
 	}()
 
+	wordJobs := make(chan chan []string, jobbuffer)
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case job := <-wordJobs:
+				if err := pools.Add(func() {
+					for _, word := range <-job {
+						letterCounter.Compute(word)
+						wordCounter.Compute(word)
+					}
+
+					letters, letterCount := letterCounter.Stat()
+					words, wordCount := wordCounter.Stat()
+					top5.Update(service.FreshStat{
+						Words:        words,
+						Letters:      letters,
+						TotalWords:   wordCount,
+						TotalLetters: letterCount,
+					})
+				}); err != nil {
+					log.Printf("WorkerPool failed to handle a job")
+				}
+			}
+		}
+	}()
+
 	tcpAddr, _ := ctx.GetString("tcpAddr")
-	return service.TCPService(ctx, true, tcpAddr, pools, letters, words, top5)
+	return service.TCPService(ctx, true, tcpAddr, wordJobs)
 }

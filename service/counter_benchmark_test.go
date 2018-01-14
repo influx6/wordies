@@ -1,23 +1,25 @@
-package service
+package service_test
 
 import (
 	"testing"
 
 	"github.com/icrowley/fake"
+	"github.com/influx6/wordies/internal"
+	"github.com/influx6/wordies/service"
 )
 
 var (
-	sample300Words   = lexSentence(fake.SentencesN(300))
-	sample3000Words  = lexSentence(fake.SentencesN(3000))
-	sample10000Words = lexSentence(fake.SentencesN(10000))
-	sample50000Words = lexSentence(fake.SentencesN(50000))
+	sample300Words   = internal.LexSentence(fake.SentencesN(300))
+	sample3000Words  = internal.LexSentence(fake.SentencesN(3000))
+	sample10000Words = internal.LexSentence(fake.SentencesN(10000))
+	sample50000Words = internal.LexSentence(fake.SentencesN(50000))
 )
 
 func benchmarkLetterFrequency(b *testing.B, samples []string) {
 	b.StopTimer()
 	b.ReportAllocs()
 
-	counter := NewLetterCounter()
+	counter := service.NewLetterCounter()
 
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
@@ -32,7 +34,7 @@ func benchmarkCountFrequency(b *testing.B, samples []string) {
 	b.StopTimer()
 	b.ReportAllocs()
 
-	wordCounter := NewWordCounter()
+	wordCounter := service.NewWordCounter()
 
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {

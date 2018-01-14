@@ -1,15 +1,16 @@
-package service
+package service_test
 
 import (
 	"testing"
 
 	"github.com/influx6/faux/tests"
+	"github.com/influx6/wordies/service"
 )
 
 func TestLetterCount(t *testing.T) {
 	expected := map[int][]string{2: []string{"B", "K", "P"}, 3: []string{"C"}, 26: []string{"E"}, 6: []string{"D", "F"}, 7: []string{"S", "W"}, 9: []string{"A", "M", "T"}, 8: []string{"I", "R"}, 1: []string{"L", "U"}, 5: []string{"G", "H", "N", "O"}, 0: []string{"J", "Q", "V", "X", "Y", "Z"}}
 
-	counter := NewLetterCounter()
+	counter := service.NewLetterCounter()
 	for _, word := range basicWords {
 		counter.Compute(word)
 	}
@@ -36,7 +37,7 @@ func TestLetterCount(t *testing.T) {
 func TestWordCounter(t *testing.T) {
 	expected := map[int][]string{1: []string{"after", "appeared", "at", "before", "but", "cafe", "coffee", "got", "home", "kissed", "knew", "left", "married", "met", "some", "the", "went", "were", "which", "with"}, 2: []string{"greg", "i", "miss.", "we"}, 3: []string{"and", "me"}}
 
-	counter := NewWordCounter()
+	counter := service.NewWordCounter()
 	for _, word := range basicWords {
 		counter.Compute(word)
 	}
@@ -78,49 +79,4 @@ func compareSlices(first, second []string) bool {
 	}
 
 	return true
-}
-
-func TestLexSentence(t *testing.T) {
-	testLexSentenceWithPeriods(t)
-	testLexSentenceWithMultiSentences(t)
-	testLexSentenceWithAbbreviationsAndClosedPeriod(t)
-}
-
-func testLexSentenceWithPeriods(t *testing.T) {
-	sentence := "This, that, and the other.We've decided to run-before the marathon Dr..."
-	expected := []string{"This", "that", "and", "the", "other", "We've", "decided", "to", "run-before", "the", "marathon", "Dr."}
-
-	words := lexSentence(sentence)
-	for index, word := range words {
-		if word != expected[index] {
-			tests.Failed("Should have matched word %q at index %d", word, index)
-		}
-	}
-	tests.Passed("Should have successfully matched all lexed words")
-}
-
-func testLexSentenceWithMultiSentences(t *testing.T) {
-	sentence := "This became the 20th day of the year. We went to a club house!"
-	expected := []string{"This", "became", "the", "20th", "day", "of", "the", "year", "We", "went", "to", "a", "club", "house"}
-
-	words := lexSentence(sentence)
-	for index, word := range words {
-		if word != expected[index] {
-			tests.Failed("Should have matched word %q at index %d", word, index)
-		}
-	}
-	tests.Passed("Should have successfully matched all lexed words")
-}
-
-func testLexSentenceWithAbbreviationsAndClosedPeriod(t *testing.T) {
-	sentence := "Miss. Greg left.Dir went home bef. we met."
-	expected := []string{"Miss.", "Greg", "left", "Dir", "went", "home", "bef.", "we", "met"}
-
-	words := lexSentence(sentence)
-	for index, word := range words {
-		if word != expected[index] {
-			tests.Failed("Should have matched word %q at index %d", word, index)
-		}
-	}
-	tests.Passed("Should have successfully matched all lexed words")
 }

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/influx6/faux/tests"
-	"github.com/influx6/wordies/abbrvs"
+	"github.com/influx6/wordies/internal/abbrvs"
 )
 
 func TestGetMeanings(t *testing.T) {

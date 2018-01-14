@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"encoding/json"
@@ -9,16 +9,18 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/influx6/faux/tests"
+	"github.com/influx6/wordies/internal"
+	"github.com/influx6/wordies/service"
 )
 
 var (
 	basicSentence = "Miss. Greg left with me and we met at the cafe and went home. After which I got me some coffee; but Miss. Greg appeared and kissed me before I knew we were married"
-	basicWords    = lexSentence(basicSentence)
+	basicWords    = internal.LexSentence(basicSentence)
 )
 
 func TestTop5StatsHTTPHandler(t *testing.T) {
-	letters := NewLetterCounter()
-	words := NewWordCounter()
+	letters := service.NewLetterCounter()
+	words := service.NewWordCounter()
 
 	for _, word := range basicWords {
 		letters.Compute(word)
@@ -28,8 +30,8 @@ func TestTop5StatsHTTPHandler(t *testing.T) {
 	ltstat, lttotal := letters.Stat()
 	wdstat, wdtotal := words.Stat()
 
-	top5 := new(Top5WordLetterStat)
-	top5.Update(FreshStat{
+	top5 := new(service.Top5WordLetterStat)
+	top5.Update(service.FreshStat{
 		Words:        wdstat,
 		Letters:      ltstat,
 		TotalWords:   wdtotal,
@@ -44,13 +46,13 @@ func TestTop5StatsHTTPHandler(t *testing.T) {
 	tests.Passed("Should have created request")
 
 	router := mux.NewRouter()
-	router.Path("/stats").HandlerFunc(Top5Stats(top5)).Methods("GET")
+	router.Path("/stats").HandlerFunc(service.Top5Stats(top5)).Methods("GET")
 
 	router.ServeHTTP(res, req)
 
 	validateStandardResponse(res)
 
-	var stat Top5Stat
+	var stat service.Top5Stat
 	if err := json.NewDecoder(res.Body).Decode(&stat); err != nil {
 		tests.FailedWithError(err, "Should have recieved valid json response")
 	}
