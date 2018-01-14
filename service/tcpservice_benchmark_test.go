@@ -129,7 +129,7 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 
 	var waiter sync.WaitGroup
 
-	var addr = "localhost:7559"
+	var addr = "localhost:5567"
 
 	jobs := make(chan chan []string, 0)
 	ctx, cancel := context.WithCancel(context.Background())
