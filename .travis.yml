@@ -1,8 +1,8 @@
 language: go
 
-versions:
-  - go1.8
-  - go1.9
+go:
+  - 1.8
+  - 1.9
 
 before_script:
 after_script:
