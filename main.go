@@ -30,7 +30,7 @@ func main() {
 				&flags.StringFlag{
 					Name:    "httpAddr",
 					Desc:    "sets the address for the http service",
-					Default: "localhost:8080",
+					Default: "http://localhost:8080",
 				},
 				&flags.DurationFlag{
 					Name:    "timeout",
