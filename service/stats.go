@@ -1,7 +1,6 @@
 package service
 
 import (
-	"sort"
 	"sync"
 )
 
@@ -49,7 +48,6 @@ func (sn *Top5WordLetterStat) Update(fr FreshStat) {
 				break
 			}
 
-			sort.Strings(fr.Letters[freq])
 			stat.Letters = append(stat.Letters, fr.Letters[freq]...)
 		}
 
