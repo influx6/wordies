@@ -2,24 +2,24 @@
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
-
 jobs:
   build:
     docker:
-      image: circleci/golang:1.9
-      working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
-      steps:
-        - checkout
+      # specify the version
+      - image: circleci/golang:1.8
+      - image: circleci/golang:1.9
 
-dependencies:
-  override:
+    #### TEMPLATE_NOTE: go expects specific checkout path representing url
+    #### expecting it in the form of
+    ####   /go/src/github.com/circleci/go-tool
+    ####   /go/src/bitbucket.org/circleci/go-tool
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      - checkout
 
-tests:
-  override:
-    - go test -cover ./abbrvs/...
-    - go test -cover ./service/...
-    - go test -v ./abbrvs/...
-    - go test -v ./service/...
-    - go test -run=xXX -bench=.
-
-
+      # specify any bash command here prefixed with `run: `
+      - run: go test -cover ./abbrvs/...
+      - run: go test -cover ./service/...
+      - run: go test -v ./abbrvs/...
+      - run: go test -v ./service/...
+      - run: go test -run=xXX -bench=.
