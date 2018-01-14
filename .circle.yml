@@ -9,6 +9,11 @@ jobs:
       - image: circleci/golang:1.8
       - image: circleci/golang:1.9
 
+  tests:
+   override:
+    - go test -v ./abbrvs/...
+    - go test -v ./service/...
+    - go test -run=xXX -bench=.
 
     #### TEMPLATE_NOTE: go expects specific checkout path representing url
     #### expecting it in the form of
@@ -20,8 +25,3 @@ jobs:
 
 #      -run
 
-    tests:
-     override:
-      - go test -v ./abbrvs/...
-      - go test -v ./service/...
-      - go test -run=xXX -bench=.
