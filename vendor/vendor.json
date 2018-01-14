@@ -3,10 +3,64 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "+Bo3QheGAtKFk7QPb+pdIEZNiYI=",
+			"path": "github.com/AndreasBriese/bbloom",
+			"revision": "28f7e881ca57bc00e028f9ede9f0d9104cfeef5e",
+			"revisionTime": "2017-07-02T08:40:17Z"
+		},
+		{
 			"checksumSHA1": "MlUD2f40H8YDmxG3x4Fta3l+iUk=",
 			"path": "github.com/corpix/uarand",
 			"revision": "2b8494104d86337cdd41d0a49cbed8e4583c0ab4",
 			"revisionTime": "2017-09-03T19:08:22Z"
+		},
+		{
+			"checksumSHA1": "NkyRz2qEWTiJM9lhHYinttqwUSM=",
+			"path": "github.com/dgraph-io/badger",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"revisionTime": "2018-01-05T07:22:57Z"
+		},
+		{
+			"checksumSHA1": "oOuT7ebEiZ1ViHLKdFxKFOvobAQ=",
+			"path": "github.com/dgraph-io/badger/options",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"revisionTime": "2018-01-05T07:22:57Z"
+		},
+		{
+			"checksumSHA1": "gGTDnTVVw5kcT2P5NXZV1YSckOU=",
+			"path": "github.com/dgraph-io/badger/protos",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"revisionTime": "2018-01-05T07:22:57Z"
+		},
+		{
+			"checksumSHA1": "xBLLiAouTGA/lCAcQ5qjxQiuPCc=",
+			"path": "github.com/dgraph-io/badger/skl",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"revisionTime": "2018-01-05T07:22:57Z"
+		},
+		{
+			"checksumSHA1": "I33KkP2lnYqJDasvvsAlebzkeko=",
+			"path": "github.com/dgraph-io/badger/table",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"revisionTime": "2018-01-05T07:22:57Z"
+		},
+		{
+			"checksumSHA1": "Ncx8CwVucgI1bv1WDQ0eq7XFeIw=",
+			"path": "github.com/dgraph-io/badger/y",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"revisionTime": "2018-01-05T07:22:57Z"
+		},
+		{
+			"checksumSHA1": "+MUIij/Y6vqAkx0P5GjHeqnU9ZU=",
+			"path": "github.com/dgryski/go-farm",
+			"revision": "2de33835d10275975374b37b2dcfd22c9020a1f5",
+			"revisionTime": "2018-01-09T07:02:41Z"
+		},
+		{
+			"checksumSHA1": "yqF125xVSkmfLpIVGrLlfE05IUk=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "1e59b77b52bf8e4b449a57e6f79f21226d571845",
+			"revisionTime": "2017-11-13T18:07:20Z"
 		},
 		{
 			"checksumSHA1": "06I0wBTXKCu2Br46zNqsv+LXRgY=",
@@ -37,6 +91,36 @@
 			"path": "github.com/influx6/faux/tests",
 			"revision": "6588dec3d92c5c37be9274572b00939259eddeff",
 			"revisionTime": "2018-01-13T20:34:54Z"
+		},
+		{
+			"checksumSHA1": "xCv4GBFyw07vZkVtKF/XrUnkHRk=",
+			"path": "github.com/pkg/errors",
+			"revision": "e881fd58d78e04cf6d0de1217f8707c8cc2249bc",
+			"revisionTime": "2017-12-16T07:03:16Z"
+		},
+		{
+			"checksumSHA1": "GtamqiJoL7PGHsN454AoffBFMa8=",
+			"path": "golang.org/x/net/context",
+			"revision": "d866cfc389cec985d6fda2859936a575a55a3ab6",
+			"revisionTime": "2017-12-11T20:45:21Z"
+		},
+		{
+			"checksumSHA1": "UxahDzW2v4mf/+aFxruuupaoIwo=",
+			"path": "golang.org/x/net/internal/timeseries",
+			"revision": "d866cfc389cec985d6fda2859936a575a55a3ab6",
+			"revisionTime": "2017-12-11T20:45:21Z"
+		},
+		{
+			"checksumSHA1": "u/r66lwYfgg682u5hZG7/E7+VCY=",
+			"path": "golang.org/x/net/trace",
+			"revision": "d866cfc389cec985d6fda2859936a575a55a3ab6",
+			"revisionTime": "2017-12-11T20:45:21Z"
+		},
+		{
+			"checksumSHA1": "++MsxaBN30inOcAz7KvFGddE7ic=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "810d7000345868fc619eb81f46307107118f4ae1",
+			"revisionTime": "2018-01-09T14:25:55Z"
 		}
 	],
 	"rootPath": "github.com/influx6/wordies"
