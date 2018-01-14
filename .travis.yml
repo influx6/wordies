@@ -9,3 +9,13 @@ after_script:
 script:
 
 
+jobs:
+ include:
+  - stage: test
+    script: go test -v ./abbrvs/...
+    script: go test -v ./service/...
+  - stage: benchmarks
+    script: go test -run=xXX -bench . ./services/...
+  - stage: deploy
+    script: echo "do nothing... :)"
+
