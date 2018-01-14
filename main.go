@@ -128,13 +128,20 @@ func send(ctx flags.Context) error {
 
 	conn, err := net.DialTimeout("tcp", tcpAddr, timeout)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	sentences := strings.Join(ctx.Args(), " ") + "\r\n"
+	fmt.Printf("Sending: %+q\n", sentences)
+
 	writer := bufio.NewWriterSize(conn, len(sentences))
 	writer.WriteString(sentences)
-	return writer.Flush()
+	if err := writer.Flush(); err != nil {
+		return err
+	}
+
+	fmt.Println("Sent!")
+	return nil
 }
 
 func serve(ctx flags.Context) error {

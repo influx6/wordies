@@ -67,6 +67,7 @@ func (wc *WordCounter) Stat() (map[int][]string, int) {
 func (wc *WordCounter) Compute(word string) {
 	wc.ml.Lock()
 	defer wc.ml.Unlock()
+	word = strings.ToLower(word)
 	wc.words[word]++
 }
 

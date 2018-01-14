@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 
 	"bufio"
@@ -46,7 +45,7 @@ func TCPService(ctx context.Context, addr string, pool WorkerPool, letters *Lett
 		go func(cn net.Conn) {
 			defer waiter.Done()
 			if err := handleClientConnection(cn, pool, letters, words, nf); err != nil {
-				log.Printf("client error: %+s\n", err)
+				log.Printf("client connection closed: %+s\n", cn.RemoteAddr())
 			}
 		}(newConn)
 	}
@@ -66,9 +65,9 @@ func handleClientConnection(conn net.Conn, pool WorkerPool, lt *LetterCounter, w
 	for {
 		data, err := textReader.ReadLine()
 		if err != nil {
-			if err == io.EOF {
-				fmt.Printf("Read Err on %+q: %+q\n", conn.RemoteAddr(), err)
-			}
+			//if err == io.EOF {
+			//fmt.Printf("Read Err on %+q: %+q\n", conn.RemoteAddr(), err)
+			//}
 
 			return err
 		}
@@ -77,6 +76,7 @@ func handleClientConnection(conn net.Conn, pool WorkerPool, lt *LetterCounter, w
 		// also we need to keep this data uncorruptable, preferable to
 		// turn into string here than copy into another slice.
 		func(sentence string) {
+			fmt.Println("Recieved: ", sentence)
 			pool.Add(func() {
 				for _, word := range lexSentence(data) {
 					lt.Compute(word)
