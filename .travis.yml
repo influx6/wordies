@@ -4,6 +4,8 @@ go:
   - 1.8
   - 1.9
 
+before_install:
+after_install:
 install:
   - go install
 before_script:
