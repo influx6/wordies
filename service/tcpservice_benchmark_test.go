@@ -20,7 +20,7 @@ func BenchmarkTCPServiceWithConstantMessage(b *testing.B) {
 	letters := service.NewLetterCounter()
 	words := service.NewWordCounter()
 
-	var addr = "localhost:64559"
+	var addr = "localhost:6559"
 	ctx, cancel := context.WithCancel(context.Background())
 
 	jobs := make(chan chan []string, 0)
@@ -73,7 +73,7 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 	letters := service.NewLetterCounter()
 	words := service.NewWordCounter()
 
-	var addr = "localhost:44559"
+	var addr = "localhost:4559"
 	ctx, cancel := context.WithCancel(context.Background())
 
 	jobs := make(chan chan []string, 0)
@@ -129,7 +129,7 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 
 	var waiter sync.WaitGroup
 
-	var addr = "localhost:24559"
+	var addr = "localhost:7559"
 
 	jobs := make(chan chan []string, 0)
 	ctx, cancel := context.WithCancel(context.Background())
