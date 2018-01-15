@@ -27,7 +27,11 @@ func sortFrequencies(items map[int][]string) []int {
 }
 
 // BadgerWordCounter implements a word counter ontop of badger
-// key-value store, which provides fast reads and writes.
+// key-value store.
+// TODO: Currently benchmark shows power performance here,
+// very different from expectation, might be approach of benchmarks
+// but badger should provide higher value when dealing with larger
+// word sets, will need to look more into this.
 type BadgerWordCounter struct {
 	db *badger.DB
 }
