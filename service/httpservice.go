@@ -14,6 +14,7 @@ func Top5Stats(top5 *Top5WordLetterStat) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(top5.Stat()); err != nil {
 			log.Printf("http error: failed to write top5 stat for request from %+q: %+s", r.RemoteAddr, err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
