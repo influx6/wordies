@@ -18,8 +18,9 @@ var (
 	maxDataSize = 1024 * 1024 // 1mb
 )
 
-// TCPService initializes a simple tcp based connection which listens for requests form clients, which
-// then gets processed by both letters and word counters in provided worker pool.
+// TCPService initializes a simple tcp based server, which listens for requests from clients, which
+// then processed into words and send into provided jobs channel. It closes said channel when
+// the server get's closed.
 func TCPService(ctx context.Context, verbose bool, addr string, jobs chan chan []string) error {
 	defer close(jobs)
 
@@ -63,8 +64,9 @@ func TCPService(ctx context.Context, verbose bool, addr string, jobs chan chan [
 	return nil
 }
 
-// handleClientConnection handles the internal logic necessary to listen to messages provided by connected clients.
+// handleClientConnection handles the internal logic necessary to listen to messages from a client net.Conn.
 // We will read on a line by line basis, that is all text must have the \r\n ending attached.
+// It processed received sentences into words and feeds it into provided job channel.
 func handleClientConnection(conn net.Conn, verbose bool, jobs chan chan []string) error {
 	reader := bufio.NewReaderSize(conn, maxDataSize)
 	defer reader.Reset(nil)
