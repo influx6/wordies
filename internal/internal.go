@@ -14,9 +14,10 @@ var (
 )
 
 // LexSentences breaks down provided sentence into it's individual words.
-// This provides a simplistic, non complicated version using the golang
-// internal package, more sophisticated approaches could be research, or
-// consider looking into ML with Textbox (https://machinebox.io/docs/textbox).
+// This provides a simplistic, non to optimized version, a more sophisticated
+// approaches could be research, or consider looking into ML built properly
+// for text processing with all rules related to gramma. Such has with
+// Textbox (https://machinebox.io/docs/textbox).
 func LexSentence(sentence string) []string {
 	var words []string
 
