@@ -15,30 +15,35 @@ type FreshStat struct {
 
 // StatMetric presents a simple interface to notify of a finished event.
 type StatMetric interface {
-	Update(FreshStat)
+	Update(FreshStat) error
 }
 
 // StatMetrics defines a slice of StatMetrics instances.
 type StatMetrics []StatMetric
 
 // Notify sends calls to all Notify instances within it'self.
-func (n StatMetrics) Update(fs FreshStat) {
+func (n StatMetrics) Update(fs FreshStat) error {
 	for _, elem := range n {
-		go elem.Update(fs)
+		if err := elem.Update(fs); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-// Top5WordLetterStat implements the Notify interface, which
-// it uses to initiates the underline process of generating
-// new stats about the top 5 letters and words.
+// Top5WordLetterStat implements the StatMetric interface, it
+// generates the top 5 letters and words metric from the
+// instance of FreshStat it receives when runned.
+// It's stats method always returns it last successfully generated
+// stats.
 type Top5WordLetterStat struct {
 	mu   sync.RWMutex
 	last Top5Stat
 }
 
-// Notify recalculates the latests top5 letters and words
-// from both the LetterCounter and the WordCounter.
-func (sn *Top5WordLetterStat) Update(fr FreshStat) {
+// Update recalculates the top5 letters and words
+// from both the received argument.
+func (sn *Top5WordLetterStat) Update(fr FreshStat) error {
 	var stat Top5Stat
 	stat.Count = fr.TotalWords
 
@@ -73,20 +78,19 @@ func (sn *Top5WordLetterStat) Update(fr FreshStat) {
 	sn.mu.Lock()
 	sn.last = stat
 	sn.mu.Unlock()
+	return nil
 }
 
-// Top5Stat embodies data collected over top5
+// Top5Stat embodies data stored by Top5WordLetterStat to
+// contain metrics on total words, top 5 words and letters.
 type Top5Stat struct {
 	Count   int      `json:"count"`
 	Letters []string `json:"top_5_letters"`
 	Words   []string `json:"top_5_words"`
 }
 
-// Stat returns the latests generated since last call of it's
-// .Notify method.
-// We do this to minimize expensive ops of calculating new
-// top5 markers everytime by letter the service notify
-// need of update.
+// Stat returns the latest generated stat since last call of it's
+// .Update method.
 func (sn *Top5WordLetterStat) Stat() Top5Stat {
 	sn.mu.RLock()
 	defer sn.mu.RUnlock()
