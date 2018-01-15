@@ -2,12 +2,12 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"errors"
 	"io"
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"strings"
@@ -118,9 +118,8 @@ func stats(ctx flags.Context) error {
 		return fmt.Errorf("HTTP Request Failed: invalid response type")
 	}
 
-	var bu bytes.Buffer
-	io.Copy(&bu, res.Body)
-	fmt.Println(bu.String())
+	io.Copy(os.Stdout, res.Body)
+	fmt.Printf("\n")
 	return nil
 }
 
