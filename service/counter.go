@@ -16,7 +16,7 @@ var (
 )
 
 // sortFrequencies returns a slice of ints which contains the sorted
-// frequencies keys from the frequency map.
+// frequencies counts from the frequency map.
 func sortFrequencies(items map[int][]string) []int {
 	freqs := make([]int, len(items))
 	for counter := range items {
