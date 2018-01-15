@@ -43,8 +43,8 @@ func NewBadgerWordCounter(db *badger.DB) *BadgerWordCounter {
 	}
 }
 
-// Stat returns a map of frequency to string slicemap generated from
-// the internal word map of the word counter.
+// Stat returns stats of all letters seen from computed words since
+// instantiation/creation. It retrieves from the underline badger db.
 func (bwc *BadgerWordCounter) Stat() (map[int][]string, int, error) {
 	freq := make(map[int][]string)
 
@@ -81,8 +81,8 @@ func (bwc *BadgerWordCounter) Stat() (map[int][]string, int, error) {
 	return freq, total, nil
 }
 
-// Compute generates from provided sentences words which it uses to update
-// it's words hashmap.
+// Compute generates frequency counts by updating it's
+// count of provided word.
 func (bwc *BadgerWordCounter) Compute(word string) error {
 	word = strings.ToLower(word)
 	wordBytes := []byte(word)
@@ -131,8 +131,8 @@ func NewWordCounter() *WordCounter {
 	}
 }
 
-// Stat returns a map of frequency to string slicemap generated from
-// the internal word map of the word counter.
+// Stat returns stats of all letters seen from
+// computed words since instantiation/creation.
 func (wc *WordCounter) Stat() (map[int][]string, int) {
 	wc.ml.RLock()
 	defer wc.ml.RUnlock()
@@ -149,8 +149,8 @@ func (wc *WordCounter) Stat() (map[int][]string, int) {
 	return freq, len(wc.words)
 }
 
-// Compute generates from provided sentences words which it uses to update
-// it's words hashmap.
+// Compute generates frequency counts by updating it's
+// count of provided word.
 func (wc *WordCounter) Compute(word string) error {
 	wc.ml.Lock()
 	defer wc.ml.Unlock()
@@ -178,7 +178,7 @@ func NewLetterCounter() *LetterCounter {
 }
 
 // Stat returns stats of all letters seen from
-// computed words since creation.
+// computed words since instantiation/creation.
 func (lc *LetterCounter) Stat() (map[int][]string, int) {
 	lc.ml.RLock()
 	defer lc.ml.RUnlock()
@@ -194,8 +194,8 @@ func (lc *LetterCounter) Stat() (map[int][]string, int) {
 	return freq, len(lc.letters)
 }
 
-// Compute handles the update of internal letter stat
-// with provided words.
+// Compute generates frequency counts by updating it's
+// count of provided word.
 func (lc *LetterCounter) Compute(word string) error {
 	lc.ml.Lock()
 	defer lc.ml.Unlock()
