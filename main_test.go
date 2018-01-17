@@ -26,7 +26,7 @@ func BenchmarkTCPServiceWithWorkerPool(b *testing.B) {
 	letters := service.NewLetterCounter()
 	words := service.NewWordCounter()
 
-	var addr = "localhost:3559"
+	var addr = "localhost:3640"
 	ctx, cancel := context.WithCancel(context.Background())
 
 	jobs := make(chan chan string, 0)
@@ -87,7 +87,7 @@ func BenchmarkTCPServiceWithUpdatesWithWorkerPool(b *testing.B) {
 	words := service.NewWordCounter()
 	top5 := new(service.Top5WordLetterStat)
 
-	var addr = "localhost:5559"
+	var addr = "localhost:5670"
 	ctx, cancel := context.WithCancel(context.Background())
 
 	jobs := make(chan chan string, 0)

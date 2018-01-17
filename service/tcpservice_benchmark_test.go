@@ -73,7 +73,7 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 	letters := service.NewLetterCounter()
 	words := service.NewWordCounter()
 
-	var addr = "localhost:4559"
+	var addr = "localhost:4398"
 	ctx, cancel := context.WithCancel(context.Background())
 
 	jobs := make(chan chan string, 0)
@@ -107,7 +107,9 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		writer.WriteString(fake.Sentences())
+		sentence := fake.Sentences()
+		b.SetBytes(int64(len(sentence)))
+		writer.WriteString(sentence)
 		writer.Write(ending)
 	}
 
