@@ -16,7 +16,6 @@ import (
 var (
 	ending        = []byte("\r\n")
 	basicSentence = "Miss. Greg left with me and we met at the cafe and went home. After which I got me some coffee; but Miss. Greg appeared and kissed me before I knew we were married"
-	basicWords    = internal.LexSentence(basicSentence)
 )
 
 func BenchmarkTCPServiceWithWorkerPool(b *testing.B) {

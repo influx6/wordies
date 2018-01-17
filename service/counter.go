@@ -4,12 +4,9 @@ import (
 	"sort"
 	"strings"
 
-	"encoding/binary"
 	"sync"
 
 	"unicode"
-
-	"github.com/dgraph-io/badger"
 )
 
 var (
@@ -25,96 +22,6 @@ func sortFrequencies(items map[int][]string) []int {
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(freqs)))
 	return freqs
-}
-
-// BadgerWordCounter implements a word counter ontop of badger
-// key-value store.
-// TODO: Currently benchmark shows poor performance here,
-// very different from expectation, might be approach of benchmarks
-// but badger should provide higher value when dealing with larger
-// word sets, will need to look more into this.
-type BadgerWordCounter struct {
-	db *badger.DB
-}
-
-// NewBadgerWordCounter returns a new BadgerWordCounter instance.
-func NewBadgerWordCounter(db *badger.DB) *BadgerWordCounter {
-	return &BadgerWordCounter{
-		db: db,
-	}
-}
-
-// Stat returns stats of all letters seen from computed words since
-// instantiation/creation. It retrieves from the underline badger db.
-func (bwc *BadgerWordCounter) Stat() (map[int][]string, int, error) {
-	freq := make(map[int][]string)
-
-	var total int
-	if err := bwc.db.View(func(tx *badger.Txn) error {
-		itr := tx.NewIterator(badger.IteratorOptions{
-			PrefetchSize:   120,
-			PrefetchValues: true,
-		})
-
-		defer itr.Close()
-
-		for itr.Rewind(); itr.Valid(); itr.Next() {
-			item := itr.Item()
-			value, err := item.Value()
-			if err != nil {
-				return err
-			}
-
-			count := toInt(value)
-			freq[count] = append(freq[count], string(item.Key()))
-			total++
-		}
-
-		return nil
-	}); err != nil {
-		return nil, 0, err
-	}
-
-	for _, items := range freq {
-		sort.Strings(items)
-	}
-
-	return freq, total, nil
-}
-
-// Compute generates frequency counts by updating it's
-// count of provided word.
-func (bwc *BadgerWordCounter) Compute(word string) error {
-	word = strings.ToLower(word)
-	wordBytes := []byte(word)
-	return bwc.db.Update(func(tx *badger.Txn) error {
-		val, err := tx.Get(wordBytes)
-		if err != nil {
-			if err != badger.ErrKeyNotFound {
-				return err
-			}
-
-			return tx.Set(wordBytes, fromInt(1))
-		}
-
-		lastCountByte, err := val.Value()
-		if err != nil {
-			return err
-		}
-
-		lastCount := toInt(lastCountByte)
-		return tx.Set(wordBytes, fromInt(lastCount+1))
-	})
-}
-
-func fromInt(d int) []byte {
-	data := make([]byte, 2)
-	binary.BigEndian.PutUint16(data, uint16(d))
-	return data
-}
-
-func toInt(b []byte) int {
-	return int(binary.BigEndian.Uint16(b))
 }
 
 // WordCounter implements a simple and slow word counter,

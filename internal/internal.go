@@ -10,59 +10,15 @@ import (
 
 var (
 	dot          = rune('.')
-	empty        = rune(' ')
-	hiphen       = rune('\'')
-	dash         = rune('-')
 	punctuations = ";:,!?"
 	mixedDot     = regexp.MustCompile(`\w+\.[\w\d]+`)
 	multidot     = regexp.MustCompile(`\.+`)
 )
 
-// LexSentences breaks down provided sentence into it's individual words.
-// This provides a simplistic, non to optimized version, a more sophisticated
-// approaches could be research, or consider looking into ML built properly
-// for text processing with all rules related to gramma. Such has with
-// Textbox (https://machinebox.io/docs/textbox).
-func LexSentence(sentence string) []string {
-	initials := strings.Fields(strings.Map(replacePunctuations, sentence))
-	total := len(initials)
-
-	var word string
-	for index := 0; index < total; index++ {
-		word = initials[index]
-		if mixedDot.MatchString(word) {
-			if parts := strings.Split(word, "."); len(parts) > 0 {
-				initials = append(initials, parts[1:]...)
-				initials[index] = parts[0]
-			}
-			continue
-		}
-
-		if multidot.MatchString(word) {
-			word = multidot.ReplaceAllString(word, ".")
-			if abbrvs.IsAbbreviated(word) {
-				initials[index] = word
-				continue
-			}
-
-			initials[index] = strings.TrimSuffix(word, ".")
-		}
-	}
-
-	return initials
-}
-
-// replacePunctuations is used to replace all existing punctuations
-// except for periods(.), due to special cases for abbreviations.
-func replacePunctuations(r rune) rune {
-	if strings.ContainsRune(punctuations, r) {
-		return -1
-	}
-	return r
-}
-
-// WordSplicer runs through all unicode runes of giving string
-// returning each word seperated by space it finds.
+// WordSplicer breaks down provided sentence into it's individual words.
+// This provides a simple approach, but we recommend to use more sophisticated
+// approaches. Consider looking into ML built properly  for text processing with
+// all rules related to gramma. Such has with Textbox (https://machinebox.io/docs/textbox).
 func WordSplicer(sentences string, res chan string) {
 	defer close(res)
 
@@ -113,6 +69,15 @@ func WordSplicer(sentences string, res chan string) {
 	}
 }
 
+// replacePunctuations is used to replace all existing punctuations
+// except for periods(.), due to special cases for abbreviations.
+func replacePunctuations(r rune) rune {
+	if strings.ContainsRune(punctuations, r) {
+		return -1
+	}
+	return r
+}
+
 func dotSplicer(input string, res chan string) {
 	var word string
 	var lastIndex int
@@ -131,10 +96,5 @@ func dotSplicer(input string, res chan string) {
 }
 
 func cleanWord(input string) string {
-	return strings.TrimSpace(strings.Map(func(r rune) rune {
-		if strings.ContainsRune(punctuations, r) {
-			return -1
-		}
-		return r
-	}, input))
+	return strings.TrimSpace(strings.Map(replacePunctuations, input))
 }

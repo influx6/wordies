@@ -9,13 +9,12 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/influx6/faux/tests"
-	"github.com/influx6/wordies/internal"
 	"github.com/influx6/wordies/service"
 )
 
 var (
 	basicSentence = "Miss. Greg left with me and we met at the cafe and went home. After which I got me some coffee; but Miss. Greg appeared and kissed me before I knew we were married"
-	basicWords    = internal.LexSentence(basicSentence)
+	basicWords    = lexSentenceWithSplicer(basicSentence)
 )
 
 func TestTop5StatsHTTPHandler(t *testing.T) {

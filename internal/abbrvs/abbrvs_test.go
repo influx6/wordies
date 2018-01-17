@@ -1,4 +1,4 @@
-package abbrvs_test
+package abbrvs
 
 import (
 	"testing"
