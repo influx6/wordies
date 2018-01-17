@@ -7,6 +7,8 @@ import (
 	"encoding/binary"
 	"sync"
 
+	"unicode"
+
 	"github.com/dgraph-io/badger"
 )
 
@@ -167,7 +169,7 @@ func (wc *WordCounter) Compute(word string) error {
 // LetterCounter is safe for concurrent use.
 type LetterCounter struct {
 	ml      sync.RWMutex
-	letters map[string]int
+	letters map[rune]int
 }
 
 // NewLetterCounter returns a new instance of the LetterCounter.
@@ -185,7 +187,7 @@ func (lc *LetterCounter) Stat() (map[int][]string, int) {
 
 	freq := make(map[int][]string)
 	for letter, counter := range lc.letters {
-		freq[counter] = append(freq[counter], letter)
+		freq[counter] = append(freq[counter], string(letter))
 	}
 
 	for _, items := range freq {
@@ -200,19 +202,22 @@ func (lc *LetterCounter) Compute(word string) error {
 	lc.ml.Lock()
 	defer lc.ml.Unlock()
 
-	word = strings.ToUpper(word)
-	for letter, count := range lc.letters {
-		newInc := strings.Count(word, letter)
-		lc.letters[letter] = count + newInc
+	for _, rune := range word {
+		if !unicode.IsUpper(rune) {
+			lc.letters[unicode.ToUpper(rune)]++
+			continue
+		}
+
+		lc.letters[rune]++
 	}
 	return nil
 }
 
 // mapLetters returns a map of all english alphabets with
 // associated int64 counter.
-func mapLetters() map[string]int {
-	mapp := map[string]int{}
-	for _, char := range charsSet {
+func mapLetters() map[rune]int {
+	mapp := map[rune]int{}
+	for _, char := range chars {
 		mapp[char] = 0
 	}
 	return mapp

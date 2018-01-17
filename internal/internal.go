@@ -19,27 +19,30 @@ var (
 // for text processing with all rules related to gramma. Such has with
 // Textbox (https://machinebox.io/docs/textbox).
 func LexSentence(sentence string) []string {
-	var words []string
-
 	initials := strings.Fields(strings.Map(replacePunctuations, sentence))
 	total := len(initials)
+
+	var word string
 	for index := 0; index < total; index++ {
-		word := initials[index]
+		word = initials[index]
 		if mixedDot.MatchString(word) {
-			words = append(words, strings.Split(word, ".")...)
+			if parts := strings.Split(word, "."); len(parts) > 0 {
+				initials = append(initials, parts[1:]...)
+				initials[index] = parts[0]
+			}
 			continue
 		}
 
 		if multidot.MatchString(word) {
 			word = multidot.ReplaceAllString(word, ".")
 			if !abbrvs.IsAbbreviated(word) {
-				words = append(words, strings.TrimSuffix(word, "."))
+				initials[index] = strings.TrimSuffix(word, ".")
 				continue
 			}
 
 			if suffixes, ok := abbrvs.GetAllSuffix(word); ok {
 				if index+1 >= total && !abbrvs.IsStrictlyAbbreviated(word) {
-					words = append(words, strings.TrimSuffix(word, "."))
+					initials[index] = strings.TrimSuffix(word, ".")
 					continue
 				}
 
@@ -53,24 +56,27 @@ func LexSentence(sentence string) []string {
 						continue
 					}
 
-					words = append(words, word+" "+nextWord)
+					totalItems := len(initials)
+					newWord := word + " " + nextWord
+					initials[index] = newWord
+					lastWord := initials[totalItems-1]
+					initials[index+1] = lastWord
+					initials = initials[:totalItems-1]
 					found = true
 					index++
 					break
 				}
 
 				if !found {
-					words = append(words, strings.TrimSuffix(word, "."))
+					initials[index] = strings.TrimSuffix(word, ".")
 				}
 
 				continue
 			}
 		}
-
-		words = append(words, word)
 	}
 
-	return words
+	return initials
 }
 
 // replacePunctuations is used to replace all existing punctuations
