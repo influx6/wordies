@@ -202,6 +202,10 @@ func (lc *LetterCounter) Compute(word string) error {
 	defer lc.ml.Unlock()
 
 	for _, rune := range word {
+		if !unicode.IsLetter(rune) {
+			continue
+		}
+
 		if !unicode.IsUpper(rune) {
 			lc.letters[unicode.ToUpper(rune)]++
 			continue

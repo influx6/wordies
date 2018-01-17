@@ -23,11 +23,11 @@ func TestLetterCount(t *testing.T) {
 
 	stat, total := counter.Stat()
 	if total != 26 {
-		tests.Info("Expected: %d", 21)
+		tests.Info("Expected: %d", 26)
 		tests.Info("Received: %d", total)
-		tests.Failed("Should have counted 21 words")
+		tests.Failed("Should have counted 26 words")
 	}
-	tests.Passed("Should have counted 21 words")
+	tests.Passed("Should have counted 26 words")
 
 	for count, letters := range stat {
 		if !compareSlices(letters, expected[count]) {
