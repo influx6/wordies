@@ -73,6 +73,8 @@ func LexSentence(sentence string) []string {
 
 				continue
 			}
+
+			initials[index] = word
 		}
 	}
 

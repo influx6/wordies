@@ -15,7 +15,7 @@ func TestLexSentence(t *testing.T) {
 
 func testLexSentenceWithPeriods(t *testing.T) {
 	sentence := "This, that, and the other.We've decided to run-before the marathon Dr..."
-	expected := []string{"This", "that", "and", "the", "other", "We've", "decided", "to", "run-before", "the", "marathon", "Dr."}
+	expected := []string{"This", "that", "and", "the", "other", "decided", "to", "run-before", "the", "marathon", "Dr.", "We've"}
 
 	words := internal.LexSentence(sentence)
 	for index, word := range words {
@@ -41,7 +41,7 @@ func testLexSentenceWithMultiSentences(t *testing.T) {
 
 func testLexSentenceWithAbbreviationsAndClosedPeriod(t *testing.T) {
 	sentence := "Miss. Greg left.Dir went home bef. we met."
-	expected := []string{"Miss.", "Greg", "left", "Dir", "went", "home", "bef.", "we", "met"}
+	expected := []string{"Miss.", "Greg", "left", "went", "home", "bef.", "we", "met", "Dir"}
 
 	words := internal.LexSentence(sentence)
 	for index, word := range words {
