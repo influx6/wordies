@@ -108,8 +108,66 @@ Before running any of the instructions below, ensure to have started the `wordie
 > wordies send "i want to take a moment to relax and take a strong"
 ```
 
+```bash
+> ϟ (wordies:master) wordies send help
+  Command: wordies [flags] send 
+  
+  ⡿ DESC:
+  	send provides a command that sends provided sentences to wordies tcp service if running
+  
+  ⡿ Flags:
+  	
+  	⠙ send.tcpaddr
+  	 Default: localhost:5555
+  	 Desc: sets the address for the tcp level service
+  	
+  	⠙ send.timeout
+  	 Default: 2s
+  	 Desc: sets the maximum duration allowed to wait to connect to service
+  	
+  ⡿ Examples:
+  	
+  ⡿ USAGE:
+  	
+  	⠙ wordies -send.tcpaddr=localhost:5555 send 
+  	
+  	⠙ wordies -send.timeout=2s send 
+  	
+  ⡿ OTHERS:
+  	Commands which respect context.Context, can set timeout by using the -timeout flag.
+  	e.g -timeout=4m, -timeout=4h
+  
+  ⡿ WARNING:
+  	Uses internal flag package so flags must precede command name. 
+  	e.g 'wordies -cmd.flag=4 run'
+  
+```
+
 - Retrieve latest stats from the wordies service
 
 ```bash
 > wordies stats
+```
+
+```bash
+> ϟ (wordies:master) wordies stat help
+  Usage: wordies [flags] [command] 
+  
+  ⡿ COMMANDS:
+  	⠙ stats        Retrieve current stats from wordies http service.
+  
+  	⠙ send        Send a string of sentences to the tcp server
+  
+  	⠙ serve        Serve tcp and http word frequency service.
+  
+  ⡿ HELP:
+  	Run [command] help
+  
+  ⡿ OTHERS:
+  	Run 'wordies flags' to print all flags of all commands.
+  
+  ⡿ WARNING:
+  	Uses internal flag package so flags must precede command name. 
+  	e.g 'wordies -cmd.flag=4 run'
+  
 ```
