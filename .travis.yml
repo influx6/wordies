@@ -17,6 +17,7 @@ jobs:
     script: go test -v ./service/...
   - stage: benchmarks
     script: go test -run=xXX -bench=. ./service/...
+    script: go test -run=xXX -bench=.
   - stage: deploy
     script: echo "do nothing... :)"
 
