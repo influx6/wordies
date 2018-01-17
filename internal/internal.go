@@ -3,12 +3,16 @@ package internal
 import (
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/influx6/wordies/internal/abbrvs"
 )
 
 var (
 	dot          = rune('.')
+	empty        = rune(' ')
+	hiphen       = rune('\'')
+	dash         = rune('-')
 	punctuations = ";:,!?"
 	mixedDot     = regexp.MustCompile(`\w+\.[\w\d]+`)
 	multidot     = regexp.MustCompile(`\.+`)
@@ -57,71 +61,80 @@ func replacePunctuations(r rune) rune {
 	return r
 }
 
-//// LexSentenceWithSplicer transforms giving sentences into individual
-//// words using WordSplicer undeneath.
-//func LexSentenceWithSplicer(sentences string) []string {
-//	var words []string
-//	res := make(chan string, 0)
-//	go WordSplicer(sentences, res)
-//	for word := range res {
-//		words = append(words, word)
-//	}
-//	return words
-//}
-//
-//// WordSplicer runs through all unicode runes of giving string
-//// returning each word seperated by space it finds.
-//func WordSplicer(sentences string, res chan string) {
-//	defer close(res)
-//
-//	var word string
-//	var lastIndex int
-//	for index, rune := range sentences {
-//		if unicode.IsSpace(rune) {
-//			word = sentences[lastIndex:index]
-//			lastIndex = index + 1
-//			if dotIndex := strings.IndexRune(word, dot); dotIndex != -1 && dotIndex < len(word) {
-//				dotSplicer(word, res)
-//				continue
-//			}
-//
-//			// Probably we dealing with many dot type or single dot, so
-//			// just treat has having single dot, check abbreviation if
-//			// its one, if one, get abbreviation else add without dot.
-//			if strings.HasSuffix(word, ".") {
-//				wordWithDot := word + "."
-//				if abbrvs.IsAbbreviated(wordWithDot) {
-//					res <- cleanWord(word)
-//				}
-//				continue
-//			}
-//
-//			res <- cleanWord(word)
-//			continue
-//		}
-//	}
-//}
-//
-//func dotSplicer(input string, res chan string) {
-//	var word string
-//	var lastIndex int
-//	for index, rune := range input {
-//		if rune == dot {
-//			word = input[lastIndex:index]
-//			lastIndex = index + 1
-//			res <- cleanWord(word)
-//			continue
-//		}
-//	}
-//
-//	res <- cleanWord(input[lastIndex:])
-//}
-//
-//func cleanWord(input string) string {
-//	return strings.Map(func(r rune) rune {
-//		if unicode.IsNumber(r) || unicode.IsLetter(r) {
-//			return r
-//		}
-//		return rune(0)
-//	}, input)
-//}
+// WordSplicer runs through all unicode runes of giving string
+// returning each word seperated by space it finds.
+func WordSplicer(sentences string, res chan string) {
+	defer close(res)
+
+	var word string
+	var lastIndex int
+	for index, rune := range sentences {
+		if unicode.IsSpace(rune) {
+			word = cleanWord(sentences[lastIndex:index])
+			lastIndex = index + 1
+
+			if dotIndex := strings.IndexRune(word, dot); dotIndex != -1 && dotIndex+1 < len(word) {
+				dotSplicer(word, res)
+				continue
+			}
+
+			// Probably we dealing with many dot type or single dot, so
+			// just treat has having single dot, check abbreviation if
+			// its one, if one, get abbreviation else add without dot.
+			if strings.HasSuffix(word, ".") {
+				if abbrvs.IsAbbreviated(word) {
+					res <- word
+					continue
+				}
+
+				res <- strings.TrimSuffix(word, ".")
+				continue
+			}
+
+			res <- word
+			continue
+		}
+	}
+
+	if word = sentences[lastIndex:]; len(word) != 0 {
+		word = cleanWord(word)
+
+		if abbrvs.IsAbbreviated(word) {
+			res <- word
+			return
+		}
+
+		if strings.HasSuffix(word, ".") {
+			res <- strings.TrimSuffix(word, ".")
+			return
+		}
+
+		res <- word
+	}
+}
+
+func dotSplicer(input string, res chan string) {
+	var word string
+	var lastIndex int
+	for index, rune := range input {
+		if rune == dot {
+			word = input[lastIndex:index]
+			lastIndex = index + 1
+			res <- cleanWord(word)
+			continue
+		}
+	}
+
+	if word = input[lastIndex:]; len(word) != 0 {
+		res <- cleanWord(input[lastIndex:])
+	}
+}
+
+func cleanWord(input string) string {
+	return strings.TrimSpace(strings.Map(func(r rune) rune {
+		if strings.ContainsRune(punctuations, r) {
+			return -1
+		}
+		return r
+	}, input))
+}

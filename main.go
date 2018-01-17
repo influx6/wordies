@@ -186,7 +186,7 @@ func serve(ctx flags.Context) error {
 		}
 	}()
 
-	wordJobs := make(chan chan []string, jobbuffer)
+	wordJobs := make(chan chan string, jobbuffer)
 
 	go func() {
 		for {
@@ -197,23 +197,27 @@ func serve(ctx flags.Context) error {
 				if !ok {
 					return
 				}
-				if err := pools.Add(func() {
-					for _, word := range <-job {
-						letterCounter.Compute(word)
-						wordCounter.Compute(word)
-					}
 
-					letters, letterCount := letterCounter.Stat()
-					words, wordCount := wordCounter.Stat()
-					top5.Update(service.FreshStat{
-						Words:        words,
-						Letters:      letters,
-						TotalWords:   wordCount,
-						TotalLetters: letterCount,
-					})
-				}); err != nil {
-					log.Printf("WorkerPool failed to handle a job")
-				}
+				// avoid reference leak bug with for loops.
+				func(src chan string) {
+					if err := pools.Add(func() {
+						for word := range src {
+							letterCounter.Compute(word)
+							wordCounter.Compute(word)
+						}
+
+						letters, letterCount := letterCounter.Stat()
+						words, wordCount := wordCounter.Stat()
+						top5.Update(service.FreshStat{
+							Words:        words,
+							Letters:      letters,
+							TotalWords:   wordCount,
+							TotalLetters: letterCount,
+						})
+					}); err != nil {
+						log.Printf("WorkerPool failed to handle a job")
+					}
+				}(job)
 			}
 		}
 	}()

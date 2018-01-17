@@ -26,10 +26,10 @@ func BenchmarkTCPServiceWithWorkerPool(b *testing.B) {
 	letters := service.NewLetterCounter()
 	words := service.NewWordCounter()
 
-	var addr = "localhost:6559"
+	var addr = "localhost:3559"
 	ctx, cancel := context.WithCancel(context.Background())
 
-	jobs := make(chan chan []string, 0)
+	jobs := make(chan chan string, 0)
 	var waiter sync.WaitGroup
 
 	pool := internal.NewWorkerPool(300, 30*time.Second)
@@ -46,9 +46,9 @@ func BenchmarkTCPServiceWithWorkerPool(b *testing.B) {
 	go func() {
 		defer waiter.Done()
 		for job := range jobs {
-			func(incoming chan []string) {
+			func(incoming chan string) {
 				pool.Add(func() {
-					for _, word := range <-incoming {
+					for word := range incoming {
 						letters.Compute(word)
 						words.Compute(word)
 					}
@@ -87,10 +87,10 @@ func BenchmarkTCPServiceWithUpdatesWithWorkerPool(b *testing.B) {
 	words := service.NewWordCounter()
 	top5 := new(service.Top5WordLetterStat)
 
-	var addr = "localhost:6559"
+	var addr = "localhost:5559"
 	ctx, cancel := context.WithCancel(context.Background())
 
-	jobs := make(chan chan []string, 0)
+	jobs := make(chan chan string, 0)
 	var waiter sync.WaitGroup
 
 	pool := internal.NewWorkerPool(300, 30*time.Second)
@@ -107,9 +107,9 @@ func BenchmarkTCPServiceWithUpdatesWithWorkerPool(b *testing.B) {
 	go func() {
 		defer waiter.Done()
 		for job := range jobs {
-			func(incoming chan []string) {
+			func(incoming chan string) {
 				pool.Add(func() {
-					for _, word := range <-incoming {
+					for word := range incoming {
 						letters.Compute(word)
 						words.Compute(word)
 					}

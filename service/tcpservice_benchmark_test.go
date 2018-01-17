@@ -23,7 +23,7 @@ func BenchmarkTCPServiceWithConstantMessage(b *testing.B) {
 	var addr = "localhost:6559"
 	ctx, cancel := context.WithCancel(context.Background())
 
-	jobs := make(chan chan []string, 0)
+	jobs := make(chan chan string, 0)
 	var waiter sync.WaitGroup
 
 	waiter.Add(1)
@@ -37,7 +37,7 @@ func BenchmarkTCPServiceWithConstantMessage(b *testing.B) {
 	go func() {
 		defer waiter.Done()
 		for job := range jobs {
-			for _, word := range <-job {
+			for word := range job {
 				letters.Compute(word)
 				words.Compute(word)
 			}
@@ -76,7 +76,7 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 	var addr = "localhost:4559"
 	ctx, cancel := context.WithCancel(context.Background())
 
-	jobs := make(chan chan []string, 0)
+	jobs := make(chan chan string, 0)
 
 	var waiter sync.WaitGroup
 
@@ -91,7 +91,7 @@ func BenchmarkTCPServiceWithVariableMessage(b *testing.B) {
 	go func() {
 		defer waiter.Done()
 		for job := range jobs {
-			for _, word := range <-job {
+			for word := range job {
 				letters.Compute(word)
 				words.Compute(word)
 			}
@@ -131,7 +131,7 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 
 	var addr = "localhost:5567"
 
-	jobs := make(chan chan []string, 0)
+	jobs := make(chan chan string, 0)
 	ctx, cancel := context.WithCancel(context.Background())
 
 	waiter.Add(1)
@@ -145,7 +145,7 @@ func BenchmarkTCPServiceWithUpdateCall(b *testing.B) {
 	go func() {
 		defer waiter.Done()
 		for job := range jobs {
-			for _, word := range <-job {
+			for word := range job {
 				letters.Compute(word)
 				words.Compute(word)
 			}

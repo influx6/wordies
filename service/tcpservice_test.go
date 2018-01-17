@@ -26,7 +26,7 @@ func TestTCPService(t *testing.T) {
 	words := service.NewWordCounter()
 	top5 := new(service.Top5WordLetterStat)
 
-	jobs := make(chan chan []string, 1)
+	jobs := make(chan chan string, 1)
 
 	addr := "localhost:4559"
 	var waiter sync.WaitGroup
@@ -57,7 +57,7 @@ func TestTCPService(t *testing.T) {
 	cancel()
 
 	job := <-jobs
-	for _, word := range <-job {
+	for word := range job {
 		letters.Compute(word)
 		words.Compute(word)
 	}
