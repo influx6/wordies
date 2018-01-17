@@ -150,24 +150,38 @@ Before running any of the instructions below, ensure to have started the `wordie
 ```
 
 ```bash
-> ϟ (wordies:master) wordies stat help
-  Usage: wordies [flags] [command] 
+> ϟ (wordies:master) wordies stats help
+  Command: wordies [flags] stats 
   
-  ⡿ COMMANDS:
-  	⠙ stats        Retrieve current stats from wordies http service.
+  ⡿ DESC:
+  	Sends a http requests to retrieve latest stats from the wordies http service.
   
-  	⠙ send        Send a string of sentences to the tcp server
-  
-  	⠙ serve        Serve tcp and http word frequency service.
-  
-  ⡿ HELP:
-  	Run [command] help
-  
+  ⡿ Flags:
+  	
+  	⠙ stats.httpaddr
+  	 Default: http://localhost:8080
+  	 Desc: sets the address for the http service
+  	
+  	⠙ stats.timeout
+  	 Default: 2s
+  	 Desc: sets the maximum duration allowed to wait to connect to service
+  	
+  ⡿ Examples:
+  	
+  ⡿ USAGE:
+  	
+  	⠙ wordies -stats.httpaddr=http://localhost:8080 stats 
+  	
+  	⠙ wordies -stats.timeout=2s stats 
+  	
   ⡿ OTHERS:
-  	Run 'wordies flags' to print all flags of all commands.
+  	Commands which respect context.Context, can set timeout by using the -timeout flag.
+  	e.g -timeout=4m, -timeout=4h
   
   ⡿ WARNING:
   	Uses internal flag package so flags must precede command name. 
   	e.g 'wordies -cmd.flag=4 run'
+  
+
   
 ```
