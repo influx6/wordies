@@ -69,19 +69,19 @@ func main() {
 					Desc:    "sets the maximum workers for background language processing requests",
 					Default: 1000,
 				},
-				&flags.IntFlag{
-					Name:    "job.buffer",
-					Desc:    "sets the maximum buffer to queue processing jobs",
-					Default: 500,
-				},
 				&flags.DurationFlag{
 					Name:    "workers.timeout",
 					Desc:    "sets the maximum duration allowed for a worker to be idle",
 					Default: time.Second * 30,
 				},
+				&flags.IntFlag{
+					Name:    "job.buffer",
+					Desc:    "sets the maximum buffer to queue processing jobs",
+					Default: 500,
+				},
 				&flags.StringFlag{
 					Name:    "httpAddr",
-					Desc:    "sets the address for the tcp level service",
+					Desc:    "sets the address for the http level service",
 					Default: "localhost:8080",
 				},
 				&flags.StringFlag{

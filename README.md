@@ -70,7 +70,7 @@ To run the wordies service, run `wordies serve`
   	
   	⠙ serve.httpaddr
   	 Default: localhost:8080
-  	 Desc: sets the address for the tcp level service
+  	 Desc: sets the address for the http level service
   	
   	⠙ serve.tcpaddr
   	 Default: localhost:5555
