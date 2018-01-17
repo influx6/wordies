@@ -13,8 +13,7 @@ import (
 )
 
 var (
-	chars    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	charsSet = strings.Split(chars, "")
+	chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 
 // sortFrequencies returns a slice of ints which contains the sorted
@@ -30,7 +29,7 @@ func sortFrequencies(items map[int][]string) []int {
 
 // BadgerWordCounter implements a word counter ontop of badger
 // key-value store.
-// TODO: Currently benchmark shows power performance here,
+// TODO: Currently benchmark shows poor performance here,
 // very different from expectation, might be approach of benchmarks
 // but badger should provide higher value when dealing with larger
 // word sets, will need to look more into this.
