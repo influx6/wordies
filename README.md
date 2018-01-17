@@ -47,6 +47,59 @@ Usage: wordies [flags] [command]
 To run the wordies service, run `wordies serve`
 
 
+```bash
+>  wordies serve help
+  Command: wordies [flags] serve 
+  
+  ⡿ DESC:
+  	serve starts the tcp and http components of the natural language word frequency service.
+  
+  ⡿ Flags:
+  	
+  	⠙ serve.workers
+  	 Default: 1000
+  	 Desc: sets the maximum workers for background language processing requests
+  	
+  	⠙ serve.job.buffer
+  	 Default: 500
+  	 Desc: sets the maximum buffer to queue processing jobs
+  	
+  	⠙ serve.workers.timeout
+  	 Default: 30s
+  	 Desc: sets the maximum duration allowed for a worker to be idle
+  	
+  	⠙ serve.httpaddr
+  	 Default: localhost:8080
+  	 Desc: sets the address for the tcp level service
+  	
+  	⠙ serve.tcpaddr
+  	 Default: localhost:5555
+  	 Desc: sets the address for the tcp level service
+  	
+  ⡿ Examples:
+  	
+  ⡿ USAGE:
+  	
+  	⠙ wordies -serve.workers=1000 serve 
+  	
+  	⠙ wordies -serve.job.buffer=500 serve 
+  	
+  	⠙ wordies -serve.workers.timeout=30s serve 
+  	
+  	⠙ wordies -serve.httpaddr=localhost:8080 serve 
+  	
+  	⠙ wordies -serve.tcpaddr=localhost:5555 serve 
+  	
+  ⡿ OTHERS:
+  	Commands which respect context.Context, can set timeout by using the -timeout flag.
+  	e.g -timeout=4m, -timeout=4h
+  
+  ⡿ WARNING:
+  	Uses internal flag package so flags must precede command name. 
+  	e.g 'wordies -cmd.flag=4 run'
+  
+```
+
 Before running any of the instructions below, ensure to have started the `wordies` service with `wordies serve`.
 
 - Send sentences to the wordies tcp server
